@@ -4,6 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b1f6add8-ce01-4b29-b5f1-3bc7a0a93e5f</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.12.1" />
+    <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
+  </ItemGroup>
 
 </Project>

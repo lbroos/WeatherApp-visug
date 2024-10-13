@@ -1,9 +1,11 @@
 ﻿@page "/"
 @using Microsoft.Extensions.Options
+@using Microsoft.FeatureManagement
 
 @attribute [StreamRendering]
 
-@inject IOptions<WeatherSettings> WeatherSettings;
+@inject IOptionsSnapshot<WeatherSettings> WeatherSettings;
+@inject IFeatureManagerSnapshot FeatureManager;
 
 <PageTitle>Weather</PageTitle>
 
@@ -17,35 +19,43 @@ else
 {
     <table class="table">
         <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                @if (WeatherSettings.Value.ShowFahrenheit)
-                {
-                    <th>Temp. (F)</th>
-                }
-                <th>Summary</th>
-            </tr>
+        <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            @if (WeatherSettings.Value.ShowFahrenheit)
+            {
+                <th>Temp. (F)</th>
+            }
+            <th>Summary</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    @if (WeatherSettings.Value.ShowFahrenheit)
-                    {
-                        <td>@forecast.TemperatureF</td>
-                    }
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
+        @foreach (var forecast in forecasts)
+        {
+            <tr>
+                <td>@forecast.Date.ToShortDateString()</td>
+                <td>@forecast.TemperatureC</td>
+                @if (WeatherSettings.Value.ShowFahrenheit)
+                {
+                    <td>@forecast.TemperatureF</td>
+                }
+                <td>@forecast.Summary</td>
+            </tr>
+        }
         </tbody>
     </table>
+
+    <br/>
+    if (isWeatherDescriptionEnabled)
+    {
+        <h1> Weather Description for the next @WeatherSettings.Value.NumberOfDays days will come here.</h1>
+    }
 }
 
 @code {
     private WeatherForecast[]? forecasts;
+
+    private bool isWeatherDescriptionEnabled;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,6 +70,8 @@ else
                 TemperatureC = Random.Shared.Next(-20, 55),
                 Summary = summaries[Random.Shared.Next(summaries.Length)]
             }).ToArray();
+
+        isWeatherDescriptionEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.WeatherDescription);
     }
 
     private class WeatherForecast
