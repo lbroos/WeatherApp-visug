@@ -18,14 +18,14 @@ string connectionString = builder.Configuration.GetConnectionString("AppConfig")
 builder.Configuration.AddAzureAppConfiguration(
     options =>
     {
-        if (isDevelopment)
-        {
-            options.Connect(connectionString);
-        }
-        else
-        {
+        //if (isDevelopment)
+        //{
+        //    options.Connect(connectionString);
+        //}
+        //else
+        //{
             options.Connect(new Uri(connectionString), new DefaultAzureCredential());
-        }
+        //}
 
         options.ConfigureKeyVault(keyVaultOptions =>
         {
@@ -51,7 +51,7 @@ builder.Configuration.AddAzureAppConfiguration(
             .Select(KeyFilter.Any, environment ?? LabelFilter.Null)
             .ConfigureRefresh(refreshOptions =>
                 refreshOptions
-                    .Register("WeatherApp:Sentinel", environment, refreshAll: true)
+                    .Register("WeatherApp:Sentinel", isDevelopment ? LabelFilter.Null : environment, refreshAll: true)
                     .SetRefreshInterval(TimeSpan.FromSeconds(15)))
             .UseFeatureFlags(featureFlagOptions => 
                 featureFlagOptions.SetRefreshInterval(TimeSpan.FromSeconds(15)));
